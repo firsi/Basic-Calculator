@@ -1,0 +1,157 @@
+ let isEqualPressed = false;
+class Calculator extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      singleNumDisplay: "0",
+      allNumDisplay:"0"
+    }
+    this.handleClick=this.handleClick.bind(this);
+    this.handleNumbers = this.handleNumbers.bind(this);
+    this.handleOperators = this.handleOperators.bind(this);
+    this.handleDecimal = this.handleDecimal.bind(this);
+    this.handleEqual = this.handleEqual.bind(this);
+  }
+  
+  handleClick(event) {
+    const figure = document.getElementById(event.target.id).innerHTML;
+   
+    
+    switch(event.target.className){
+      case "clear":
+        this.setState({
+          singleNumDisplay:"0",
+          allNumDisplay:"0"
+        });
+      break;
+      case "operator":
+          this.handleOperators(figure);
+          
+      break;
+      
+      case "numbers":
+        this.handleNumbers(figure);
+        
+      break;
+        
+      case "equals" :
+        this.handleEqual(figure);
+        
+      break;
+        
+      case "decimal" :
+        this.handleDecimal(figure);
+        
+        break;
+    }
+  }
+  handleNumbers(figure){
+    if(this.state.singleNumDisplay==="0" || this.state.singleNumDisplay.match(/-|\/|\*|\+/) || isEqualPressed){
+            this.setState({
+            singleNumDisplay:""+ figure
+          });
+            
+          isEqualPressed = false;
+        }
+        else{
+          this.setState({
+          singleNumDisplay: this.state.singleNumDisplay + figure
+        });
+          
+        }
+  }
+  handleOperators(figure){
+    var regexp = /[-\/\+\*]/;
+    var containOperator = regexp.test(this.state.singleNumDisplay);
+    var replacedAllNumDisplay="";
+    console.log(containOperator);
+    
+    if(this.state.allNumDisplay==="0" ){
+            this.setState({
+              allNumDisplay:"" + this.state.singleNumDisplay + figure,
+              singleNumDisplay:figure
+            });
+          }else {
+            if(containOperator){
+                
+                replacedAllNumDisplay = this.state.allNumDisplay.replace(/.$/,figure);
+                
+                this.setState({
+                    allNumDisplay: replacedAllNumDisplay,
+                    singleNumDisplay: figure
+                 });
+      
+             }else{
+               this.setState({
+               allNumDisplay:this.state.allNumDisplay + this.state.singleNumDisplay + figure,
+               singleNumDisplay:figure
+              });
+             }
+            
+          }
+  }
+  handleDecimal(figure){
+    var regexp = /\./g;
+        var containDecimal = regexp.test(this.state.singleNumDisplay)
+        if(!containDecimal){
+           if(this.state.singleNumDisplay === "0"){
+          this.setState({
+            singleNumDisplay:"0"+ figure
+          });
+        }
+        else{
+          this.handleNumbers(figure);
+        }
+        }
+        
+  }
+  handleEqual(figure){
+     var regexp = /[-\/\+\*]/;
+    var containOperator = regexp.test(this.state.singleNumDisplay);
+    var replacedAllNumDisplay="";
+   isEqualPressed = true;
+        if(containOperator){
+                
+                replacedAllNumDisplay = this.state.allNumDisplay.replace(/.$/,"");
+                this.setState({
+                    allNumDisplay:"0",
+                    singleNumDisplay:  eval(replacedAllNumDisplay).toString()
+                 });
+      
+             }else{
+               this.setState({
+               singleNumDisplay: eval(this.state.allNumDisplay + this.state.singleNumDisplay).toString(),
+               allNumDisplay: "0"
+          });
+             }
+          
+ }
+  render(){
+    return(<div class="calculator-container">
+        
+          <div id="display" className="display">
+            <div className="allNumDisplay"><span>{this.state.allNumDisplay}</span></div>
+            <div id="singleNumDisplay" className="singleNumDisplay"><span>{this.state.singleNumDisplay}</span></div>
+        </div>
+          <button id="clear" className="clear" onClick={this.handleClick}>AC</button>
+          <button id="divide" className="operator" onClick={this.handleClick}>/</button>
+          <button id="multiply" className="operator" onClick={this.handleClick}>*</button>
+          <button id="subtract" className="operator" onClick={this.handleClick}>-</button>
+          <button id="add" className="operator" onClick={this.handleClick}>+</button>
+          <button id="equals" className="equals" onClick={this.handleClick}>=</button>
+          <button id="decimal" className="decimal" onClick={this.handleClick}>.</button>
+          <button id="zero" className="numbers" onClick={this.handleClick}>0</button>
+          <button id="one" className="numbers" onClick={this.handleClick}>1</button>
+          <button id="two" className="numbers" onClick={this.handleClick}>2</button>
+          <button id="three" className="numbers" onClick={this.handleClick}>3</button>
+          <button id="four" className="numbers" onClick={this.handleClick}>4</button>
+          <button id="five" className="numbers" onClick={this.handleClick}>5</button>
+          <button id="six" className="numbers" onClick={this.handleClick}>6</button>
+          <button id="seven" className="numbers" onClick={this.handleClick}>7</button>
+          <button id="eight" className="numbers" onClick={this.handleClick}>8</button>
+          <button id="nine" className="numbers" onClick={this.handleClick}>9</button>
+        </div>)
+  }
+}
+
+ReactDOM.render(<Calculator />, document.getElementById("main-column"));
